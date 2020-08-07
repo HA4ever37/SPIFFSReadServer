@@ -1,7 +1,8 @@
 /*
 SPIFFSReadServer
-Ryan Downing
-version 0.0.4
+Created by: Ryan Downing
+Updaed by: HA4ever
+version 0.0.5
 */
 
 // just replace "ESP8266WebServer server(80);" declaration with "SPIFFSReadServer server(80);"
@@ -9,7 +10,7 @@ version 0.0.4
 #define DEBUG_SPIFFSREADSERVER(x) 
 
 #include <ESP8266WebServer.h>
-#include <FS.h>
+#include <LittleFS.h>
 
 #ifndef SPIFFSREADSERVER_H
 #define SPIFFSREADSERVER_H
@@ -60,15 +61,15 @@ class SPIFFSReadServer: public ESP8266WebServer {
 
       //look for smaller versions of file
       //minified file, good (myscript.min.js)
-      if (SPIFFS.exists(prefix + ".min" + ext)) path = prefix + ".min" + ext;
+      if (LittleFS.exists(prefix + ".min" + ext)) path = prefix + ".min" + ext;
       //gzipped file, better (myscript.js.gz)
-      if (SPIFFS.exists(prefix + ext + ".gz")) path = prefix + ext + ".gz";
+      if (LittleFS.exists(prefix + ext + ".gz")) path = prefix + ext + ".gz";
       //min and gzipped file, best (myscript.min.js.gz)
-      if (SPIFFS.exists(prefix + ".min" + ext + ".gz")) path = prefix + ".min" + ext + ".gz";
+      if (LittleFS.exists(prefix + ".min" + ext + ".gz")) path = prefix + ".min" + ext + ".gz";
 
-      if (SPIFFS.exists(path)) {
+      if (LittleFS.exists(path)) {
         DEBUG_SPIFFSREADSERVER("sending file " + path);
-        File file = SPIFFS.open(path, "r");
+        File file = LittleFS.open(path, "r");
         if (ESP8266WebServer::hasArg("download"))
           ESP8266WebServer::sendHeader("Content-Disposition", " attachment;");
         if (ESP8266WebServer::uri().indexOf("nocache") < 0)
@@ -84,7 +85,7 @@ class SPIFFSReadServer: public ESP8266WebServer {
         }
         file.close();
         return true;
-      } //if SPIFFS.exists
+      } //if LittleFS.exists
       return false;
     } //bool handleFileRead
 
