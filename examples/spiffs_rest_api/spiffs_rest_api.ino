@@ -20,7 +20,7 @@
 // https://github.com/esp8266/arduino-esp8266fs-plugin
 
 #include <DNSServer.h>
-#include <FS.h>
+#include <LittleFS.h>
 
 #define DEVICE_NAME "ESP8266 DEVICE"
 
@@ -51,8 +51,8 @@ void setup() {
     DEBUG_PRINT(persWM.getApSsid());
   });
 
-  //allows serving of files from SPIFFS
-  SPIFFS.begin();
+  //allows serving of files from LittleFS
+  LittleFS.begin();
   //sets network name for AP mode
   persWM.setApCredentials(DEVICE_NAME);
   //persWM.setApCredentials(DEVICE_NAME, "password"); optional password
