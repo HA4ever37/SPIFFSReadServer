@@ -4,7 +4,7 @@
 #define DEBUG_BEGIN Serial.begin(115200)
 #define DEBUG_PRINT(x) Serial.println(x)
 #else
-#define DEBUG_PRINT(x) 
+#define DEBUG_PRINT(x)
 #define DEBUG_BEGIN
 #endif
 
@@ -13,6 +13,7 @@
 #include <ArduinoJson.h>
 #include <ESP8266WiFi.h>
 #include <ESP8266SSDP.h>
+#include <EasySSDP.h>
 
 //extension of ESP8266WebServer with SPIFFS handlers built in
 #include <SPIFFSReadServer.h> // http://ryandowning.net/SPIFFSReadServer
@@ -38,7 +39,7 @@ String y;
 void setup() {
   DEBUG_BEGIN; //for terminal debugging
   DEBUG_PRINT();
-  
+
   //optional code handlers to run everytime wifi is connected...
   persWM.onConnect([]() {
     DEBUG_PRINT("wifi connected");
@@ -46,7 +47,7 @@ void setup() {
     EasySSDP::begin(server, DEVICE_NAME);
   });
   //...or AP mode is started
-  persWM.onAp([](){
+  persWM.onAp([]() {
     DEBUG_PRINT("AP MODE");
     DEBUG_PRINT(persWM.getApSsid());
   });
@@ -63,21 +64,20 @@ void setup() {
     DEBUG_PRINT("server.on /api");
     if (server.hasArg("x")) {
       x = server.arg("x").toInt();
-      DEBUG_PRINT(String("x: ")+x);
+      DEBUG_PRINT(String("x: ") + x);
     } //if
     if (server.hasArg("y")) {
       y = server.arg("y");
-      DEBUG_PRINT("y: "+y);
+      DEBUG_PRINT("y: " + y);
     } //if
 
     //build json object of program data
-    StaticJsonBuffer<200> jsonBuffer;
-    JsonObject &json = jsonBuffer.createObject();
+    StaticJsonDocument<200> json;
     json["x"] = x;
     json["y"] = y;
 
     char jsonchar[200];
-    json.printTo(jsonchar); //print to char array, takes more memory but sends in one piece
+    serializeJson(json, jsonchar);  //print to char array, takes more memory but sends in one piece
     server.send(200, "application/json", jsonchar);
 
   }); //server.on api
